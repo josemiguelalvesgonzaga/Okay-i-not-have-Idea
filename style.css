@@ -69,7 +69,7 @@ button, input {
   padding: 28px 20px;
   display: flex;
   flex-direction: column;
-  gap: 24px;
+  gap: 20px;
 }
 
 .brand {
@@ -126,6 +126,49 @@ button, input {
 .nav-item.active {
   background: rgba(109, 140, 255, 0.12);
   border-color: rgba(109, 140, 255, 0.2);
+}
+
+.api-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.api-box label {
+  font-size: 0.82rem;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+
+.api-box small {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.api-input-wrap {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 8px;
+}
+
+.api-input-wrap input {
+  width: 100%;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  color: var(--text);
+  padding: 10px 12px;
+  outline: none;
+}
+
+.api-input-wrap button {
+  border: none;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--primary), var(--primary-2));
+  color: white;
+  font-weight: 700;
+  padding: 10px 12px;
+  cursor: pointer;
 }
 
 .card {
@@ -282,6 +325,11 @@ button, input {
   border-bottom-right-radius: 8px;
 }
 
+.message.bot.typing .bubble {
+  font-style: italic;
+  color: var(--muted);
+}
+
 .suggestions {
   display: flex;
   flex-wrap: wrap;
@@ -369,6 +417,10 @@ button, input {
   }
 
   .composer {
+    grid-template-columns: 1fr;
+  }
+
+  .api-input-wrap {
     grid-template-columns: 1fr;
   }
 }

@@ -6,7 +6,7 @@
     <title>BotFlow | Assistente Inteligente</title>
     <meta
       name="description"
-      content="Site de chatbot moderno com interface elegante e interativa."
+      content="Chatbot com integração ao Groq para respostas em tempo real."
     />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -44,6 +44,20 @@
           </button>
         </nav>
 
+        <div class="api-box card">
+          <label for="groqApiKey">Chave Groq</label>
+          <div class="api-input-wrap">
+            <input
+              id="groqApiKey"
+              type="password"
+              placeholder="sk-..."
+              autocomplete="off"
+            />
+            <button id="saveApiKey" type="button">Salvar</button>
+          </div>
+          <small>Guarda localmente no navegador.</small>
+        </div>
+
         <div class="status-card card">
           <div class="status-pill">
             <span class="pulse"></span>
@@ -72,16 +86,16 @@
             <div class="avatar">AI</div>
             <div>
               <h3>Assistente BotFlow</h3>
-              <p>Responde em tempo real</p>
+              <p>Conectado à IA Groq</p>
             </div>
           </div>
-          <button class="action-btn">Nova conversa</button>
+          <button id="newConversation" class="action-btn" type="button">Nova conversa</button>
         </header>
 
         <section class="chat-window" id="chatWindow" aria-live="polite">
           <div class="message bot">
             <div class="bubble">
-              Olá! Sou o BotFlow. Como posso ajudar você hoje?
+              Olá! Sou o BotFlow. Para responder de verdade com IA, insira sua chave da Groq no painel lateral.
             </div>
           </div>
         </section>

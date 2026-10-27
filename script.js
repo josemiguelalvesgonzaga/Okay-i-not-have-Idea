@@ -2,18 +2,25 @@ const chatWindow = document.getElementById("chatWindow");
 const chatForm = document.getElementById("chatForm");
 const userInput = document.getElementById("userInput");
 const suggestionButtons = document.querySelectorAll(".suggestion, .chip");
+const groqApiKeyInput = document.getElementById("groqApiKey");
+const saveApiKeyButton = document.getElementById("saveApiKey");
+const newConversationButton = document.getElementById("newConversation");
 
-const botResponses = [
-  "Posso te ajudar com isso. Vamos explorar a melhor solução para o seu caso.",
-  "Entendi. Aqui vai uma abordagem simples e eficiente para você começar.",
-  "Ótima pergunta! A melhor forma é definir o objetivo primeiro e partir para a execução.",
-  "Claro! Posso orientar a melhor decisão com base no seu contexto e necessidade.",
-  "Perfeito. Podemos fazer isso de forma prática e escalável para seu negócio."
-];
+const STORAGE_KEY = "groq_api_key";
+const MODEL = "llama-3.1-8b-instant";
 
-function appendMessage(text, sender) {
+function setInputValueFromStorage() {
+  const savedKey = localStorage.getItem(STORAGE_KEY) || "";
+  groqApiKeyInput.value = savedKey;
+}
+
+function appendMessage(text, sender, isTyping = false) {
   const wrapper = document.createElement("div");
   wrapper.className = `message ${sender}`;
+
+  if (isTyping) {
+    wrapper.classList.add("typing");
+  }
 
   const bubble = document.createElement("div");
   bubble.className = "bubble";
@@ -22,35 +29,69 @@ function appendMessage(text, sender) {
   wrapper.appendChild(bubble);
   chatWindow.appendChild(wrapper);
   chatWindow.scrollTop = chatWindow.scrollHeight;
+  return wrapper;
 }
 
-function getBotReply(message) {
-  const lower = message.toLowerCase();
+function saveKey() {
+  const value = groqApiKeyInput.value.trim();
 
-  if (lower.includes("preço") || lower.includes("precos") || lower.includes("plano")) {
-    return "Os planos são pensados para crescer junto com seu negócio. Podemos sugerir a melhor opção conforme o número de usuários, integrações e automações que você precisa.";
+  if (!value) {
+    appendMessage("Digite uma chave válida da Groq antes de continuar.", "bot");
+    return;
   }
 
-  if (lower.includes("produto") || lower.includes("serviço") || lower.includes("funciona")) {
-    return "O serviço funciona como um assistente inteligente para responder dúvidas, automatizar processos e melhorar o atendimento em tempo real.";
-  }
-
-  if (lower.includes("suporte") || lower.includes("problema") || lower.includes("erro")) {
-    return "Posso ajudar com suporte técnico. Me diga qual erro ou comportamento você está enfrentando e eu te passo a melhor orientação.";
-  }
-
-  if (lower.includes("automação") || lower.includes("exemplo")) {
-    return "Um exemplo de automação é responder dúvidas frequentes, coletar dados de clientes, agendar lembretes e encaminhar pedidos para atendimento humano.";
-  }
-
-  if (lower.includes("olá") || lower.includes("oi") || lower.includes("bom dia") || lower.includes("boa tarde") || lower.includes("boa noite")) {
-    return "Olá! Tudo bem? Posso te ajudar com informações sobre o produto, planos ou suporte.";
-  }
-
-  return botResponses[Math.floor(Math.random() * botResponses.length)];
+  localStorage.setItem(STORAGE_KEY, value);
+  appendMessage("Chave salva com sucesso. Agora você pode conversar com a IA.", "bot");
 }
 
-function handleSubmit(event) {
+function getSavedKey() {
+  return localStorage.getItem(STORAGE_KEY) || "";
+}
+
+function clearChat() {
+  chatWindow.innerHTML = "";
+  appendMessage("Nova conversa iniciada. Como posso ajudar hoje?", "bot");
+}
+
+async function callGroq(prompt) {
+  const apiKey = getSavedKey();
+
+  if (!apiKey) {
+    throw new Error("Chave da Groq não encontrada. Insira sua chave no painel lateral.");
+  }
+
+  const response = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${apiKey}`
+    },
+    body: JSON.stringify({
+      model: MODEL,
+      messages: [
+        {
+          role: "system",
+          content:
+            "Você é um assistente útil, profissional e amigável. Responda em português do Brasil."
+        },
+        { role: "user", content: prompt }
+      ],
+      temperature: 0.7,
+      max_tokens: 500
+    })
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    const message = errorData.error?.message || "Erro ao consultar a API da Groq.";
+    throw new Error(message);
+  }
+
+  const data = await response.json();
+  return data.choices?.[0]?.message?.content?.trim() || "Não consegui gerar uma resposta agora.";
+}
+
+async function handleSubmit(event) {
   event.preventDefault();
 
   const message = userInput.value.trim();
@@ -59,22 +100,49 @@ function handleSubmit(event) {
   appendMessage(message, "user");
   userInput.value = "";
 
-  setTimeout(() => {
-    appendMessage(getBotReply(message), "bot");
-  }, 350);
+  const loader = appendMessage("Pensando...", "bot", true);
+
+  try {
+    const reply = await callGroq(message);
+    loader.querySelector(".bubble").textContent = reply;
+    loader.classList.remove("typing");
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  } catch (error) {
+    loader.querySelector(".bubble").textContent = error.message || "Ops! Algo deu errado.";
+    loader.classList.remove("typing");
+    chatWindow.scrollTop = chatWindow.scrollHeight;
+  }
 }
 
+function handleSuggestionClick(message) {
+  appendMessage(message, "user");
+
+  const loader = appendMessage("Pensando...", "bot", true);
+
+  callGroq(message)
+    .then((reply) => {
+      loader.querySelector(".bubble").textContent = reply;
+      loader.classList.remove("typing");
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    })
+    .catch((error) => {
+      loader.querySelector(".bubble").textContent = error.message || "Não foi possível responder.";
+      loader.classList.remove("typing");
+      chatWindow.scrollTop = chatWindow.scrollHeight;
+    });
+}
+
+saveApiKeyButton.addEventListener("click", saveKey);
 chatForm.addEventListener("submit", handleSubmit);
+newConversationButton.addEventListener("click", clearChat);
 
 suggestionButtons.forEach((button) => {
   button.addEventListener("click", () => {
     const message = button.dataset.message;
     if (!message) return;
-
-    appendMessage(message, "user");
-
-    setTimeout(() => {
-      appendMessage(getBotReply(message), "bot");
-    }, 300);
+    handleSuggestionClick(message);
   });
 });
+
+setInputValueFromStorage();
+clearChat();
