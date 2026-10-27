@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BotFlow | Assistente Inteligente</title>
+    <meta
+      name="description"
+      content="Site de chatbot moderno com interface elegante e interativa."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div class="page-bg"></div>
+
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-logo">B</div>
+          <div class="brand-text">
+            <span class="eyebrow">Assistente</span>
+            <h2>BotFlow</h2>
+          </div>
+        </div>
+
+        <nav class="nav" aria-label="Menu principal">
+          <button class="nav-item active">
+            <span>💬</span>
+            <span>Chat</span>
+          </button>
+          <button class="nav-item">
+            <span>📊</span>
+            <span>Relatórios</span>
+          </button>
+          <button class="nav-item">
+            <span>⚙️</span>
+            <span>Configurações</span>
+          </button>
+        </nav>
+
+        <div class="status-card card">
+          <div class="status-pill">
+            <span class="pulse"></span>
+            Online agora
+          </div>
+          <p>Atendimento disponível 24/7 para sua equipe.</p>
+        </div>
+
+        <div class="quick-actions card">
+          <h3>Atalhos</h3>
+          <button class="chip" data-message="Quero saber mais sobre o produto">
+            Produto
+          </button>
+          <button class="chip" data-message="Me fale sobre preços">
+            Preços
+          </button>
+          <button class="chip" data-message="Preciso de suporte técnico">
+            Suporte
+          </button>
+        </div>
+      </aside>
+
+      <main class="chat-panel">
+        <header class="topbar">
+          <div class="user-info">
+            <div class="avatar">AI</div>
+            <div>
+              <h3>Assistente BotFlow</h3>
+              <p>Responde em tempo real</p>
+            </div>
+          </div>
+          <button class="action-btn">Nova conversa</button>
+        </header>
+
+        <section class="chat-window" id="chatWindow" aria-live="polite">
+          <div class="message bot">
+            <div class="bubble">
+              Olá! Sou o BotFlow. Como posso ajudar você hoje?
+            </div>
+          </div>
+        </section>
+
+        <div class="suggestions" aria-label="Sugestões de conversa">
+          <button class="suggestion" data-message="Como funciona o serviço?">
+            Como funciona o serviço?
+          </button>
+          <button class="suggestion" data-message="Qual é o melhor plano para a minha empresa?">
+            Melhor plano para minha empresa?
+          </button>
+          <button class="suggestion" data-message="Me mostre um exemplo de automação">
+            Exemplo de automação
+          </button>
+        </div>
+
+        <form class="composer" id="chatForm">
+          <input
+            id="userInput"
+            type="text"
+            placeholder="Digite sua mensagem..."
+            autocomplete="off"
+            aria-label="Digite sua mensagem"
+          />
+          <button type="submit">Enviar</button>
+        </form>
+      </main>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
